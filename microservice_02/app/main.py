@@ -65,3 +65,5 @@ async def get_kafka_producer():
         yield producer
     finally:
         await producer.stop()
+        
+        

@@ -38,7 +38,73 @@ services:
       - broker
       - postgres_product_db
     ports:
-      - "8005:8000" # Expose container port 8000 to host port 8000
+      - "8004:8000" # Expose container port 8000 to host port 8000
+    
+  inventory-service:
+    image: inventory-mart-api
+    build:
+      context: ./inventory-service
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./inventory-service:/code 
+    depends_on:
+      - broker
+      - postgres_inventory_db
+    ports:
+      - "8005:8000"
+    
+  order-service:
+    image: order-mart-api
+    build:
+      context: ./order-service
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./order-service:/code 
+    depends_on:
+      - broker
+      - postgres_order_db
+    ports:
+      - "8006:8000"
+
+  notification-service:
+    image: notification-mart-api
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./notification-service:/code 
+    depends_on:
+      - broker
+      - postgres_order_db
+    ports:
+      - "8007:8000"
+
+  payment-service:
+    image: payment-mart-api
+    build:
+      context: ./payment-service
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./payment-service:/code 
+    depends_on:
+      - broker
+      - postgres_payment_db
+    ports:
+      - "8008:8000"
+
+  user-service:
+    image: user-mart-api
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./user-service:/code 
+    depends_on:
+      - broker
+      - postgres_user_db
+    ports:
+      - "8009:8000"
+
 
 
   postgres_db:
@@ -66,6 +132,71 @@ services:
       - "5481:5432"
     volumes:
       - postgres_product_db:/var/lib/postgresql/data
+
+  postgres_inventory_db:
+    image: postgres:latest # Use the official PostgreSQL image
+    restart: always
+    container_name: PostgresInventoryCont
+    environment:
+      - POSTGRES_USER=ziakhan
+      - POSTGRES_PASSWORD=my_password
+      - POSTGRES_DB=mydatabase
+    ports:
+      - "5482:5432"
+    volumes:
+      - postgres_product_db:/var/lib/postgresql/data
+  
+  postgres_order_db:
+    image: postgres:latest # Use the official PostgreSQL image
+    restart: always
+    container_name: PostgresOrderCont
+    environment:
+    - POSTGRES_USER=ziakhan
+    - POSTGRES_PASSWORD=my_password
+    - POSTGRES_DB=mydatabase
+    ports:
+    - "5483:5432"
+    volumes:
+    - postgres_order_db:/var/lib/postgresql/data
+
+  postgres_notification_db:
+    image: postgres:latest # Use the official PostgreSQL image
+    restart: always
+    container_name: PostgresNotificationCont
+    environment:
+    - POSTGRES_USER=ziakhan
+    - POSTGRES_PASSWORD=my_password
+    - POSTGRES_DB=mydatabase
+    ports:
+    - "5484:5432"
+    volumes:
+    - postgres_notification_db:/var/lib/postgresql/data
+
+  postgres_payment_db:
+    image: postgres:latest # Use the official PostgreSQL image
+    restart: always
+    container_name: PostgresPaymentCont
+    environment:
+    - POSTGRES_USER=ziakhan
+    - POSTGRES_PASSWORD=my_password
+    - POSTGRES_DB=mydatabase
+    ports:
+    - "5484:5432"
+    volumes:
+    - postgres_payment_db:/var/lib/postgresql/data
+
+  postgres_user_db:
+    image: postgres:latest # Use the official PostgreSQL image
+    restart: always
+    container_name: PostgresUserCont
+    environment:
+    - POSTGRES_USER=ziakhan
+    - POSTGRES_PASSWORD=my_password
+    - POSTGRES_DB=mydatabase
+    ports:
+    - "5485:5432"
+    volumes:
+    - postgres_user_db:/var/lib/postgresql/data
 
   broker:
     image: apache/kafka:3.7.0
@@ -106,6 +237,17 @@ volumes:
     driver: local
   postgres_product_db:
     driver: local
+  postgres_inventory_db:
+    driver: local
+  postgres_order_db:
+    driver: local
+  postgres_notification_db:
+    driver: local
+  postgres_payment_db:
+    driver: local
+  postgres_user_db:
+    driver: local
+
 
 networks:
   default:
